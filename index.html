@@ -1,196 +1,301 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Turbo Racing 3D</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Shooting + Fighting Game</title>
 
 <style>
 *{
+    box-sizing:border-box;
     margin:0;
     padding:0;
-    box-sizing:border-box;
-}
-
-html,body{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#111;
-    font-family:Arial,sans-serif;
     touch-action:none;
 }
 
-#game{
-    position:fixed;
-    inset:0;
-    width:100%;
-    height:100%;
+body{
+    background:#050505;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
 }
 
+#game{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    background:
+      linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.5)),
+      radial-gradient(circle at center,#263238,#080808 70%);
+    overflow:hidden;
+}
+
+#ground{
+    position:absolute;
+    bottom:0;
+    width:100%;
+    height:25%;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        #171717 0px,
+        #171717 20px,
+        #202020 20px,
+        #202020 40px
+      );
+    border-top:3px solid #444;
+}
+
+/* HUD */
 #hud{
-    position:fixed;
+    position:absolute;
     top:15px;
     left:15px;
+    right:15px;
     z-index:20;
+    display:flex;
+    justify-content:space-between;
     color:white;
-    user-select:none;
-}
-
-.panel{
-    background:rgba(0,0,0,.65);
-    padding:10px 15px;
-    border-radius:12px;
-    margin-bottom:7px;
-    border:1px solid rgba(255,255,255,.2);
-    min-width:180px;
-}
-
-.bar{
-    height:15px;
-    width:180px;
-    background:#333;
-    border-radius:20px;
-    overflow:hidden;
-    margin-top:5px;
-}
-
-#nitroBar{
-    width:100%;
-    height:100%;
-    background:#00bfff;
-}
-
-#speed{
-    font-size:24px;
+    font-size:18px;
     font-weight:bold;
 }
 
-#message{
-    position:fixed;
-    z-index:100;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    width:min(90%,430px);
-    padding:35px;
-    text-align:center;
-    color:white;
-    background:rgba(0,0,0,.9);
-    border-radius:22px;
+#healthBox{
+    width:180px;
+    height:18px;
+    border:2px solid white;
+    margin-top:7px;
+    background:#222;
+}
+
+#health{
+    width:100%;
+    height:100%;
+    background:#20d060;
+}
+
+/* Player */
+#player{
+    position:absolute;
+    width:55px;
+    height:75px;
+    bottom:25%;
+    left:12%;
+    z-index:10;
+}
+
+.head{
+    position:absolute;
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    background:#d99b68;
+    left:14px;
+    top:0;
+}
+
+.body{
+    position:absolute;
+    width:40px;
+    height:42px;
+    background:#1976d2;
+    border-radius:10px;
+    left:7px;
+    top:27px;
+}
+
+.gun{
+    position:absolute;
+    width:42px;
+    height:9px;
+    background:#777;
+    right:-35px;
+    top:35px;
+    transform:rotate(-5deg);
+    border-radius:4px;
+}
+
+.arm{
+    position:absolute;
+    width:30px;
+    height:8px;
+    background:#d99b68;
+    top:32px;
+    left:28px;
+    transform:rotate(-15deg);
+}
+
+/* Enemy */
+.enemy{
+    position:absolute;
+    width:55px;
+    height:75px;
+    bottom:25%;
+    z-index:8;
+}
+
+.enemy .head{
+    background:#c97c55;
+}
+
+.enemy .body{
+    background:#c62828;
+}
+
+.enemy .gun{
     display:none;
 }
 
-#message h1{
+/* Bullet */
+.bullet{
+    position:absolute;
+    width:15px;
+    height:5px;
+    background:#ffe600;
+    border-radius:10px;
+    z-index:12;
+    box-shadow:0 0 12px #fff000;
+}
+
+/* Hit effect */
+.hit{
+    position:absolute;
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    border:4px solid #fff;
+    animation:hit .2s linear forwards;
+    z-index:30;
+}
+
+@keyframes hit{
+    from{transform:scale(.4);opacity:1}
+    to{transform:scale(2);opacity:0}
+}
+
+/* Start Screen */
+#startScreen{
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.85);
+    z-index:100;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    color:white;
+    text-align:center;
+}
+
+#startScreen h1{
     font-size:42px;
+    color:#ff3333;
+    text-shadow:0 0 15px red;
     margin-bottom:15px;
 }
 
-button{
-    border:0;
-    border-radius:12px;
-    padding:13px 25px;
-    font-weight:bold;
-    font-size:16px;
-    cursor:pointer;
+#startScreen p{
+    margin:7px;
+    color:#ddd;
 }
 
-#start{
-    position:fixed;
-    z-index:100;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    width:min(92%,450px);
-    padding:32px;
-    text-align:center;
+#startBtn{
+    margin-top:25px;
+    padding:15px 40px;
+    border:none;
+    border-radius:10px;
+    background:#e53935;
     color:white;
-    background:rgba(0,0,0,.92);
-    border-radius:22px;
+    font-size:20px;
+    font-weight:bold;
 }
 
-#start h1{
-    font-size:40px;
+/* Mobile Controls */
+#controls{
+    position:absolute;
+    bottom:20px;
+    left:0;
+    width:100%;
+    z-index:50;
+    display:flex;
+    justify-content:space-between;
+    padding:0 20px;
+}
+
+.controlGroup{
+    display:flex;
+    gap:12px;
+}
+
+.btn{
+    width:65px;
+    height:65px;
+    border-radius:50%;
+    border:2px solid #aaa;
+    background:rgba(30,30,30,.75);
+    color:white;
+    font-size:25px;
+    font-weight:bold;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    user-select:none;
+}
+
+.shoot{
+    background:rgba(190,30,30,.8);
+}
+
+.fight{
+    background:rgba(40,80,190,.8);
+}
+
+/* Game Over */
+#gameOver{
+    display:none;
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.88);
+    z-index:200;
+    color:white;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    text-align:center;
+}
+
+#gameOver h2{
+    color:red;
+    font-size:45px;
     margin-bottom:10px;
 }
 
-#start p{
-    color:#ccc;
-    line-height:1.7;
-    margin:12px 0 22px;
-}
-
-#start button{
-    background:#ff4d00;
+#restartBtn{
+    margin-top:20px;
+    padding:13px 35px;
+    border:0;
+    border-radius:8px;
+    background:#e53935;
     color:white;
+    font-size:19px;
 }
 
-#mobile{
-    display:none;
-    position:fixed;
-    inset:0;
-    z-index:50;
-    pointer-events:none;
-}
-
-.mobileBtn{
-    position:absolute;
-    width:72px;
-    height:72px;
-    border-radius:50%;
-    background:rgba(0,0,0,.55);
-    color:white;
-    border:2px solid rgba(255,255,255,.35);
-    pointer-events:auto;
-}
-
-#left{
-    left:25px;
-    bottom:35px;
-}
-
-#right{
-    left:110px;
-    bottom:35px;
-}
-
-#accelerate{
-    right:25px;
-    bottom:120px;
-}
-
-#brake{
-    right:110px;
-    bottom:35px;
-}
-
-#nitro{
-    right:25px;
-    bottom:35px;
-    background:rgba(0,120,255,.65);
-}
-
-@media(max-width:800px){
-
-    #mobile{
-        display:block;
+@media(max-width:600px){
+    #startScreen h1{
+        font-size:30px;
     }
 
     #hud{
-        font-size:12px;
+        font-size:14px;
     }
 
-    .panel{
-        min-width:145px;
-        padding:7px 10px;
+    #healthBox{
+        width:130px;
     }
 
-    .bar{
-        width:140px;
-    }
-
-    #speed{
-        font-size:18px;
+    .btn{
+        width:58px;
+        height:58px;
     }
 }
 </style>
@@ -198,1659 +303,472 @@ button{
 
 <body>
 
-<canvas id="game"></canvas>
+<div id="game">
 
-<div id="start">
+    <div id="ground"></div>
 
-    <h1>🏎️ TURBO RACING 3D</h1>
+    <div id="hud">
+        <div>
+            ❤️ Health
+            <div id="healthBox">
+                <div id="health"></div>
+            </div>
+        </div>
 
-    <p>
-        एक fast 3D racing game!<br>
-        Opponent cars को पीछे छोड़ो,<br>
-        Nitro इस्तेमाल करो और race जीतों।
-    </p>
-
-    <p>
-        PC: W / ↑ = Accelerate<br>
-        S / ↓ = Brake<br>
-        A,D / ←,→ = Steering<br>
-        SHIFT = Nitro
-    </p>
-
-    <button onclick="startGame()">
-        START RACE
-    </button>
-
-</div>
-
-<div id="hud">
-
-    <div class="panel">
-        🏁 LAP:
-        <b><span id="lap">1</span>/3</b>
-    </div>
-
-    <div class="panel">
-        🏆 POSITION:
-        <b><span id="position">1</span>/6</b>
-    </div>
-
-    <div class="panel">
-        ⏱️ TIME:
-        <b id="timer">0.0</b>s
-    </div>
-
-    <div class="panel">
-        🚗 SPEED:
-        <span id="speed">0</span> KM/H
-    </div>
-
-    <div class="panel">
-        ⚡ NITRO
-        <div class="bar">
-            <div id="nitroBar"></div>
+        <div>
+            🎯 Score: <span id="score">0</span>
+            <br>
+            ⭐ Level: <span id="level">1</span>
         </div>
     </div>
 
-</div>
+    <div id="player">
+        <div class="head"></div>
+        <div class="body"></div>
+        <div class="arm"></div>
+        <div class="gun"></div>
+    </div>
 
-<div id="message">
+    <div id="controls">
 
-    <h1 id="resultTitle">
-        🏆 YOU WIN!
-    </h1>
+        <div class="controlGroup">
+            <div class="btn" id="leftBtn">◀</div>
+            <div class="btn" id="rightBtn">▶</div>
+        </div>
 
-    <p id="resultText"></p>
+        <div class="controlGroup">
+            <div class="btn fight" id="fightBtn">👊</div>
+            <div class="btn shoot" id="shootBtn">🔫</div>
+        </div>
 
-    <br>
+    </div>
 
-    <button onclick="location.reload()">
-        PLAY AGAIN
-    </button>
+    <div id="startScreen">
+        <h1>🔥 SHOOT & FIGHT 🔥</h1>
 
-</div>
+        <p>🔫 Shoot enemies</p>
+        <p>👊 Fight enemies when they get close</p>
+        <p>💻 Computer: Arrow Keys + Space + F</p>
+        <p>📱 Mobile: Touch Buttons</p>
 
-<div id="mobile">
+        <button id="startBtn">START GAME</button>
+    </div>
 
-    <button
-        class="mobileBtn"
-        id="left">
-        ◀
-    </button>
-
-    <button
-        class="mobileBtn"
-        id="right">
-        ▶
-    </button>
-
-    <button
-        class="mobileBtn"
-        id="accelerate">
-        ▲
-    </button>
-
-    <button
-        class="mobileBtn"
-        id="brake">
-        ▼
-    </button>
-
-    <button
-        class="mobileBtn"
-        id="nitro">
-        ⚡
-    </button>
+    <div id="gameOver">
+        <h2>GAME OVER</h2>
+        <p>Final Score: <span id="finalScore">0</span></p>
+        <button id="restartBtn">PLAY AGAIN</button>
+    </div>
 
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <script>
 
-/* =========================================
-   GAME VARIABLES
-========================================= */
+const game = document.getElementById("game");
+const player = document.getElementById("player");
 
-let scene;
-let camera;
-let renderer;
-let clock;
+const scoreText = document.getElementById("score");
+const levelText = document.getElementById("level");
+const healthBar = document.getElementById("health");
 
-let playerCar;
+const startScreen = document.getElementById("startScreen");
+const gameOverScreen = document.getElementById("gameOver");
 
-let opponents=[];
+let playerX = 12;
+let health = 100;
+let score = 0;
+let level = 1;
 
-let started=false;
-let gameOver=false;
+let movingLeft = false;
+let movingRight = false;
 
-let keys={};
+let gameRunning = false;
+let enemies = [];
+let bullets = [];
 
-let speed=0;
-
-let maxSpeed=.9;
-
-let acceleration=.018;
-
-let friction=.985;
-
-let steering=0;
-
-let nitro=100;
-
-let lap=1;
-
-let raceTime=0;
-
-let trackProgress=0;
-
-let lastCheckpoint=-1;
-
-let checkpoints=[];
-
-let totalLaps=3;
-
-let roadRadius=120;
+let enemyTimer = null;
+let gameLoop = null;
 
 
-/* =========================================
-   START
-========================================= */
+/* START GAME */
+
+document.getElementById("startBtn").onclick = startGame;
+
+document.getElementById("restartBtn").onclick = startGame;
+
 
 function startGame(){
 
-    document.getElementById("start").style.display="none";
+    startScreen.style.display = "none";
+    gameOverScreen.style.display = "none";
 
-    started=true;
+    health = 100;
+    score = 0;
+    level = 1;
+    playerX = 12;
 
-    init();
+    scoreText.textContent = score;
+    levelText.textContent = level;
+    healthBar.style.width = health + "%";
+
+    enemies.forEach(e => e.element.remove());
+    bullets.forEach(b => b.element.remove());
+
+    enemies = [];
+    bullets = [];
+
+    gameRunning = true;
+
+    player.style.left = playerX + "%";
+
+    clearInterval(enemyTimer);
+
+    enemyTimer = setInterval(spawnEnemy,900);
+
+    cancelAnimationFrame(gameLoop);
+
+    gameLoop = requestAnimationFrame(update);
+
 }
 
 
-/* =========================================
-   INIT
-========================================= */
+/* PLAYER MOVEMENT */
 
-function init(){
+function movePlayer(){
 
-    scene=new THREE.Scene();
+    if(!gameRunning) return;
 
-    scene.background=
-        new THREE.Color(0x78c8ef);
-
-    scene.fog=
-        new THREE.Fog(
-            0x78c8ef,
-            100,
-            500
-        );
-
-
-    camera=
-        new THREE.PerspectiveCamera(
-            65,
-            window.innerWidth/window.innerHeight,
-            .1,
-            800
-        );
-
-
-    renderer=
-        new THREE.WebGLRenderer({
-            canvas:document.getElementById("game"),
-            antialias:true
-        });
-
-
-    renderer.setSize(
-        window.innerWidth,
-        window.innerHeight
-    );
-
-
-    renderer.setPixelRatio(
-        Math.min(
-            window.devicePixelRatio,
-            2
-        )
-    );
-
-
-    renderer.shadowMap.enabled=true;
-
-
-    clock=new THREE.Clock();
-
-
-    createLights();
-
-    createWorld();
-
-    createPlayerCar();
-
-    createOpponents();
-
-    createCheckpoints();
-
-    setupControls();
-
-    animate();
-}
-
-
-/* =========================================
-   LIGHTS
-========================================= */
-
-function createLights(){
-
-    const hemi=
-        new THREE.HemisphereLight(
-            0xffffff,
-            0x555555,
-            2
-        );
-
-    scene.add(hemi);
-
-
-    const sun=
-        new THREE.DirectionalLight(
-            0xffffff,
-            3
-        );
-
-    sun.position.set(
-        100,
-        180,
-        80
-    );
-
-    sun.castShadow=true;
-
-    scene.add(sun);
-}
-
-
-/* =========================================
-   WORLD
-========================================= */
-
-function createWorld(){
-
-    const ground=
-        new THREE.Mesh(
-            new THREE.PlaneGeometry(
-                700,
-                700
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x3c9b3c
-            })
-        );
-
-
-    ground.rotation.x=
-        -Math.PI/2;
-
-
-    ground.receiveShadow=true;
-
-
-    scene.add(ground);
-
-
-    createRaceTrack();
-
-    createEnvironment();
-}
-
-
-/* =========================================
-   TRACK
-========================================= */
-
-function createRaceTrack(){
-
-    const segments=120;
-
-    const trackWidth=24;
-
-    const roadGeo=
-        new THREE.BoxGeometry(
-            trackWidth,
-            .4,
-            7
-        );
-
-
-    const roadMat=
-        new THREE.MeshStandardMaterial({
-            color:0x333333
-        });
-
-
-    for(
-        let i=0;
-        i<segments;
-        i++
-    ){
-
-        const angle=
-            (i/segments)*
-            Math.PI*2;
-
-
-        const x=
-            Math.cos(angle)*
-            roadRadius;
-
-
-        const z=
-            Math.sin(angle)*
-            roadRadius;
-
-
-        const road=
-            new THREE.Mesh(
-                roadGeo,
-                roadMat
-            );
-
-
-        road.position.set(
-            x,
-            .2,
-            z
-        );
-
-
-        road.rotation.y=
-            -angle;
-
-
-        road.receiveShadow=true;
-
-
-        scene.add(road);
-
-
-        createRoadLine(
-            angle
-        );
+    if(movingLeft){
+        playerX -= .8;
     }
 
+    if(movingRight){
+        playerX += .8;
+    }
 
-    createTrackBarriers();
+    playerX = Math.max(2,Math.min(75,playerX));
+
+    player.style.left = playerX + "%";
 }
 
 
-function createRoadLine(angle){
+/* SHOOT */
 
-    const x=
-        Math.cos(angle)*
-        roadRadius;
+function shoot(){
 
+    if(!gameRunning) return;
 
-    const z=
-        Math.sin(angle)*
-        roadRadius;
+    const bullet = document.createElement("div");
 
+    bullet.className = "bullet";
 
-    const line=
-        new THREE.Mesh(
-            new THREE.BoxGeometry(
-                1,
-                .05,
-                5
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0xffffff
-            })
-        );
+    const startX = player.offsetLeft + 70;
+    const startY = player.offsetTop + 38;
 
+    bullet.style.left = startX + "px";
+    bullet.style.top = startY + "px";
 
-    line.position.set(
-        x,
-        .43,
-        z
-    );
+    game.appendChild(bullet);
 
-
-    line.rotation.y=
-        -angle;
-
-
-    scene.add(line);
+    bullets.push({
+        element:bullet,
+        x:startX,
+        y:startY
+    });
 }
 
 
-/* =========================================
-   TRACK BARRIERS
-========================================= */
+/* FIGHT */
 
-function createTrackBarriers(){
+function fight(){
 
-    const segments=100;
+    if(!gameRunning) return;
 
-    for(
-        let i=0;
-        i<segments;
-        i++
-    ){
+    const px = player.offsetLeft;
 
-        const angle=
-            i/segments*
-            Math.PI*2;
+    enemies.forEach((enemy,index)=>{
 
+        const distance = Math.abs(enemy.x - px);
 
-        for(
-            const side of [-1,1]
-        ){
+        if(distance < 100){
 
-            const radius=
-                roadRadius+
-                side*15;
+            damageEnemy(enemy,index,20);
 
-
-            const x=
-                Math.cos(angle)*
-                radius;
-
-
-            const z=
-                Math.sin(angle)*
-                radius;
-
-
-            const barrier=
-                new THREE.Mesh(
-                    new THREE.BoxGeometry(
-                        2,
-                        1.5,
-                        5
-                    ),
-                    new THREE.MeshStandardMaterial({
-                        color:
-                            side===-1
-                            ?0xff3030
-                            :0xffffff
-                    })
-                );
-
-
-            barrier.position.set(
-                x,
-                .75,
-                z
-            );
-
-
-            barrier.rotation.y=
-                -angle;
-
-
-            scene.add(barrier);
         }
-    }
+
+    });
 }
 
 
-/* =========================================
-   ENVIRONMENT
-========================================= */
+/* CREATE ENEMY */
 
-function createEnvironment(){
+function spawnEnemy(){
 
-    for(let i=0;i<100;i++){
+    if(!gameRunning) return;
 
-        const angle=
-            Math.random()*
-            Math.PI*2;
+    const enemy = document.createElement("div");
 
+    enemy.className = "enemy";
 
-        const radius=
-            170+
-            Math.random()*140;
+    enemy.innerHTML = `
+        <div class="head"></div>
+        <div class="body"></div>
+        <div class="arm"></div>
+    `;
 
+    let x = 90 + Math.random()*10;
 
-        const x=
-            Math.cos(angle)*
-            radius;
+    enemy.style.left = x + "%";
 
+    game.appendChild(enemy);
 
-        const z=
-            Math.sin(angle)*
-            radius;
+    enemies.push({
+        element:enemy,
+        x:x * window.innerWidth / 100,
+        health:100,
+        speed:0.5 + level*.08
+    });
 
-
-        createTree(
-            x,
-            z
-        );
-    }
-
-
-    createGrandstand(
-        0,
-        -170
-    );
-
-
-    createStartLine();
 }
 
 
-/* =========================================
-   TREE
-========================================= */
+/* DAMAGE ENEMY */
 
-function createTree(x,z){
+function damageEnemy(enemy,index,damage){
 
-    const trunk=
-        new THREE.Mesh(
-            new THREE.CylinderGeometry(
-                .7,
-                .9,
-                5,
-                8
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x704214
-            })
-        );
+    enemy.health -= damage;
 
+    createHitEffect(enemy.element.offsetLeft+20,
+                     enemy.element.offsetTop+20);
 
-    trunk.position.set(
-        x,
-        2.5,
-        z
-    );
+    if(enemy.health <= 0){
 
+        score += 10;
 
-    scene.add(trunk);
+        scoreText.textContent = score;
 
+        enemy.element.remove();
 
-    const leaves=
-        new THREE.Mesh(
-            new THREE.SphereGeometry(
-                4,
-                10,
-                10
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x15803d
-            })
-        );
+        enemies.splice(index,1);
 
+        level = Math.floor(score/100)+1;
 
-    leaves.position.set(
-        x,
-        7,
-        z
-    );
+        levelText.textContent = level;
+    }
 
-
-    leaves.castShadow=true;
-
-
-    scene.add(leaves);
 }
 
 
-/* =========================================
-   GRANDSTAND
-========================================= */
+/* HIT EFFECT */
 
-function createGrandstand(x,z){
+function createHitEffect(x,y){
 
-    const stand=
-        new THREE.Mesh(
-            new THREE.BoxGeometry(
-                50,
-                10,
-                12
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x555555
-            })
-        );
+    const hit = document.createElement("div");
 
+    hit.className = "hit";
 
-    stand.position.set(
-        x,
-        5,
-        z
-    );
+    hit.style.left = x + "px";
+    hit.style.top = y + "px";
 
+    game.appendChild(hit);
 
-    scene.add(stand);
+    setTimeout(()=>{
+        hit.remove();
+    },200);
 
-
-    for(let i=0;i<10;i++){
-
-        const seat=
-            new THREE.Mesh(
-                new THREE.BoxGeometry(
-                    4,
-                    1,
-                    2
-                ),
-                new THREE.MeshStandardMaterial({
-                    color:0xff3333
-                })
-            );
-
-
-        seat.position.set(
-            -20+i*4.5,
-            11,
-            z-7
-        );
-
-
-        scene.add(seat);
-    }
 }
 
 
-/* =========================================
-   START LINE
-========================================= */
+/* UPDATE GAME */
 
-function createStartLine(){
+function update(){
 
-    const line=
-        new THREE.Mesh(
-            new THREE.BoxGeometry(
-                24,
-                .06,
-                5
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0xffffff
-            })
-        );
+    if(!gameRunning) return;
 
+    movePlayer();
 
-    line.position.set(
-        roadRadius,
-        .45,
-        0
-    );
 
+    /* BULLETS */
 
-    line.rotation.y=
-        Math.PI/2;
+    bullets.forEach((bullet,index)=>{
 
+        bullet.x += 9;
 
-    scene.add(line);
+        bullet.element.style.left =
+            bullet.x + "px";
 
+        let removeBullet = false;
 
-    for(let i=0;i<8;i++){
+        enemies.forEach((enemy,enemyIndex)=>{
 
-        const block=
-            new THREE.Mesh(
-                new THREE.BoxGeometry(
-                    3,
-                    .08,
-                    2.5
-                ),
-                new THREE.MeshStandardMaterial({
-                    color:
-                        i%2===0
-                        ?0x000000
-                        :0xffffff
-                })
-            );
-
-
-        block.position.set(
-            roadRadius,
-            .5,
-            -9+i*2.5
-        );
-
-
-        scene.add(block);
-    }
-}
-
-
-/* =========================================
-   CAR CREATOR
-========================================= */
-
-function createCar(color){
-
-    const car=
-        new THREE.Group();
-
-
-    const body=
-        new THREE.Mesh(
-            new THREE.BoxGeometry(
-                4,
-                1.3,
-                7
-            ),
-            new THREE.MeshStandardMaterial({
-                color:color
-            })
-        );
-
-
-    body.position.y=1.2;
-
-    body.castShadow=true;
-
-    car.add(body);
-
-
-    const cabin=
-        new THREE.Mesh(
-            new THREE.BoxGeometry(
-                3,
-                1.4,
-                3.2
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x18212b
-            })
-        );
-
-
-    cabin.position.set(
-        0,
-        2.1,
-        .3
-    );
-
-
-    car.add(cabin);
-
-
-    const windshield=
-        new THREE.Mesh(
-            new THREE.BoxGeometry(
-                2.5,
-                .9,
-                .1
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x79d9ff,
-                transparent:true,
-                opacity:.65
-            })
-        );
-
-
-    windshield.position.set(
-        0,
-        2.15,
-        -1.35
-    );
-
-
-    car.add(windshield);
-
-
-    for(
-        const x of [-2.2,2.2]
-    ){
-
-        for(
-            const z of [-2.2,2.2]
-        ){
-
-            const wheel=
-                new THREE.Mesh(
-                    new THREE.CylinderGeometry(
-                        .85,
-                        .85,
-                        .65,
-                        16
-                    ),
-                    new THREE.MeshStandardMaterial({
-                        color:0x111111
-                    })
-                );
-
-
-            wheel.rotation.z=
-                Math.PI/2;
-
-
-            wheel.position.set(
-                x,
-                .8,
-                z
-            );
-
-
-            car.add(wheel);
-        }
-    }
-
-
-    const lightMat=
-        new THREE.MeshStandardMaterial({
-            color:0xffffaa,
-            emissive:0xffff00
-        });
-
-
-    for(
-        const x of [-1.2,1.2]
-    ){
-
-        const light=
-            new THREE.Mesh(
-                new THREE.BoxGeometry(
-                    .6,
-                    .4,
-                    .15
-                ),
-                lightMat
-            );
-
-
-        light.position.set(
-            x,
-            1.4,
-            -3.52
-        );
-
-
-        car.add(light);
-    }
-
-
-    return car;
-}
-
-
-/* =========================================
-   PLAYER CAR
-========================================= */
-
-function createPlayerCar(){
-
-    playerCar=
-        createCar(
-            0x1565ff
-        );
-
-
-    playerCar.position.set(
-        roadRadius,
-        0,
-        -7
-    );
-
-
-    playerCar.rotation.y=
-        -Math.PI/2;
-
-
-    scene.add(playerCar);
-
-
-    camera.position.set(
-        0,
-        8,
-        14
-    );
-}
-
-
-/* =========================================
-   OPPONENTS
-========================================= */
-
-function createOpponents(){
-
-    const colors=[
-        0xff2020,
-        0xffcc00,
-        0x20cc55,
-        0x9b30ff,
-        0xffffff
-    ];
-
-
-    for(
-        let i=0;
-        i<5;
-        i++
-    ){
-
-        const car=
-            createCar(
-                colors[i]
-            );
-
-
-        const angle=
-            (i+1)*
-            .025;
-
-
-        car.position.set(
-            roadRadius-
-            i*2.5,
-            0,
-            -2+i*4
-        );
-
-
-        car.rotation.y=
-            -Math.PI/2;
-
-
-        car.userData={
-            angle:0,
-            speed:.45+
-                Math.random()*.18,
-            progress:
-                -(i+1)*2
-        };
-
-
-        scene.add(car);
-
-        opponents.push(car);
-    }
-}
-
-
-/* =========================================
-   CHECKPOINTS
-========================================= */
-
-function createCheckpoints(){
-
-    for(
-        let i=0;
-        i<12;
-        i++
-    ){
-
-        checkpoints.push({
-            angle:
-                i/12*
-                Math.PI*2
-        });
-    }
-}
-
-
-/* =========================================
-   CONTROLS
-========================================= */
-
-function setupControls(){
-
-    window.addEventListener(
-        "keydown",
-        e=>{
-            keys[e.code]=true;
-        }
-    );
-
-
-    window.addEventListener(
-        "keyup",
-        e=>{
-            keys[e.code]=false;
-        }
-    );
-
-
-    setupMobileButton(
-        "left",
-        "KeyA"
-    );
-
-
-    setupMobileButton(
-        "right",
-        "KeyD"
-    );
-
-
-    setupMobileButton(
-        "accelerate",
-        "KeyW"
-    );
-
-
-    setupMobileButton(
-        "brake",
-        "KeyS"
-    );
-
-
-    setupMobileButton(
-        "nitro",
-        "ShiftLeft"
-    );
-
-
-    window.addEventListener(
-        "resize",
-        resize
-    );
-}
-
-
-/* =========================================
-   MOBILE BUTTON
-========================================= */
-
-function setupMobileButton(
-    id,
-    key
-){
-
-    const button=
-        document.getElementById(id);
-
-
-    button.addEventListener(
-        "touchstart",
-        e=>{
-            e.preventDefault();
-            keys[key]=true;
-        }
-    );
-
-
-    button.addEventListener(
-        "touchend",
-        e=>{
-            e.preventDefault();
-            keys[key]=false;
-        }
-    );
-
-
-    button.addEventListener(
-        "touchcancel",
-        ()=>{
-            keys[key]=false;
-        }
-    );
-}
-
-
-/* =========================================
-   PLAYER UPDATE
-========================================= */
-
-function updatePlayer(){
-
-    if(gameOver)
-        return;
-
-
-    const accelerating=
-        keys["KeyW"] ||
-        keys["ArrowUp"];
-
-
-    const braking=
-        keys["KeyS"] ||
-        keys["ArrowDown"];
-
-
-    const left=
-        keys["KeyA"] ||
-        keys["ArrowLeft"];
-
-
-    const right=
-        keys["KeyD"] ||
-        keys["ArrowRight"];
-
-
-    const usingNitro=
-        keys["ShiftLeft"] ||
-        keys["ShiftRight"];
-
-
-    if(accelerating){
-
-        speed+=acceleration;
-
-    }else{
-
-        speed*=friction;
-    }
-
-
-    if(braking){
-
-        speed-=.035;
-    }
-
-
-    speed=
-        Math.max(
-            0,
-            speed
-        );
-
-
-    let currentMax=
-        maxSpeed;
-
-
-    if(
-        usingNitro &&
-        nitro>0 &&
-        speed>.1
-    ){
-
-        currentMax=
-            1.35;
-
-        speed+=.025;
-
-        nitro-=.6;
-
-    }else{
-
-        nitro+=.12;
-    }
-
-
-    nitro=
-        Math.max(
-            0,
-            Math.min(
-                100,
-                nitro
-            )
-        );
-
-
-    speed=
-        Math.min(
-            speed,
-            currentMax
-        );
-
-
-    steering=0;
-
-
-    if(left)
-        steering=-1;
-
-
-    if(right)
-        steering=1;
-
-
-    playerCar.rotation.y+=
-        steering*
-        .035*
-        (speed/.9);
-
-
-    playerCar.translateZ(
-        -speed
-    );
-
-
-    keepOnTrack();
-
-    updateRaceProgress();
-
-    checkCollisions();
-
-    updateCamera();
-}
-
-
-/* =========================================
-   KEEP CAR ON TRACK
-========================================= */
-
-function keepOnTrack(){
-
-    const x=
-        playerCar.position.x;
-
-    const z=
-        playerCar.position.z;
-
-
-    const distance=
-        Math.sqrt(
-            x*x+
-            z*z
-        );
-
-
-    if(
-        distance<
-        roadRadius-18 ||
-        distance>
-        roadRadius+18
-    ){
-
-        speed*=.92;
-    }
-
-
-    if(distance>roadRadius+30){
-
-        const scale=
-            roadRadius/
-            distance;
-
-
-        playerCar.position.x=
-            x*scale;
-
-
-        playerCar.position.z=
-            z*scale;
-    }
-}
-
-
-/* =========================================
-   RACE PROGRESS
-========================================= */
-
-function updateRaceProgress(){
-
-    const angle=
-        Math.atan2(
-            playerCar.position.z,
-            playerCar.position.x
-        );
-
-
-    let normalized=
-        angle;
-
-    if(normalized<0)
-        normalized+=
-            Math.PI*2;
-
-
-    trackProgress=
-        normalized;
-
-
-    const checkpointIndex=
-        Math.floor(
-            normalized/
-            (Math.PI*2/12)
-        );
-
-
-    if(
-        checkpointIndex!==
-        lastCheckpoint
-    ){
-
-        if(
-            lastCheckpoint===11 &&
-            checkpointIndex===0
-        ){
-
-            lap++;
-
+            const enemyScreenX =
+                enemy.element.offsetLeft;
 
             if(
-                lap>
-                totalLaps
+                bullet.x > enemyScreenX &&
+                bullet.x < enemyScreenX + 70
             ){
 
-                winRace();
+                damageEnemy(enemy,enemyIndex,35);
 
-                return;
+                removeBullet = true;
             }
-        }
 
-
-        lastCheckpoint=
-            checkpointIndex;
-    }
-}
-
-
-/* =========================================
-   OPPONENT UPDATE
-========================================= */
-
-function updateOpponents(){
-
-    for(
-        const car of opponents
-    ){
-
-        car.userData.angle+=
-            car.userData.speed*
-            .004;
-
-
-        const angle=
-            car.userData.angle;
-
-
-        car.position.x=
-            Math.cos(angle)*
-            roadRadius;
-
-
-        car.position.z=
-            Math.sin(angle)*
-            roadRadius;
-
-
-        car.rotation.y=
-            -angle+
-            Math.PI/2;
-    }
-}
-
-
-/* =========================================
-   COLLISIONS
-========================================= */
-
-function checkCollisions(){
-
-    for(
-        const car of opponents
-    ){
-
-        const distance=
-            playerCar.position.distanceTo(
-                car.position
-            );
-
-
-        if(distance<6){
-
-            speed*=.5;
-
-            car.userData.speed*=.98;
-        }
-    }
-}
-
-
-/* =========================================
-   POSITION
-========================================= */
-
-function getPlayerProgress(){
-
-    let angle=
-        Math.atan2(
-            playerCar.position.z,
-            playerCar.position.x
-        );
-
-
-    if(angle<0)
-        angle+=Math.PI*2;
-
-
-    return angle;
-}
-
-
-function getOpponentProgress(car){
-
-    return car.userData.angle%
-        (Math.PI*2);
-}
-
-
-function calculatePosition(){
-
-    const playerProgress=
-        (lap-1)*
-        Math.PI*2+
-        getPlayerProgress();
-
-
-    let position=1;
-
-
-    for(
-        const car of opponents
-    ){
-
-        const opponentProgress=
-            Math.floor(
-                lap-1
-            )*
-            Math.PI*2+
-            getOpponentProgress(
-                car
-            );
-
+        });
 
         if(
-            opponentProgress>
-            playerProgress
+            removeBullet ||
+            bullet.x > window.innerWidth
         ){
 
-            position++;
+            bullet.element.remove();
+
+            bullets.splice(index,1);
         }
+
+    });
+
+
+    /* ENEMIES */
+
+    enemies.forEach((enemy,index)=>{
+
+        const playerScreenX =
+            player.offsetLeft;
+
+        const enemyX =
+            enemy.element.offsetLeft;
+
+        if(enemyX > playerScreenX){
+
+            enemy.x -= enemy.speed;
+
+            enemy.element.style.left =
+                enemy.x + "px";
+
+        }
+
+
+        /* Enemy reaches player */
+
+        if(enemy.x < playerScreenX + 45){
+
+            health -= .4;
+
+            healthBar.style.width =
+                Math.max(0,health) + "%";
+
+            if(health <= 0){
+
+                endGame();
+            }
+
+        }
+
+    });
+
+
+    gameLoop =
+        requestAnimationFrame(update);
+}
+
+
+/* GAME OVER */
+
+function endGame(){
+
+    gameRunning = false;
+
+    clearInterval(enemyTimer);
+
+    cancelAnimationFrame(gameLoop);
+
+    document.getElementById("finalScore")
+        .textContent = score;
+
+    gameOverScreen.style.display = "flex";
+}
+
+
+/* KEYBOARD */
+
+document.addEventListener("keydown",(e)=>{
+
+    if(e.key === "ArrowLeft")
+        movingLeft = true;
+
+    if(e.key === "ArrowRight")
+        movingRight = true;
+
+    if(e.code === "Space"){
+        e.preventDefault();
+        shoot();
     }
 
-
-    return Math.min(
-        6,
-        position
-    );
-}
-
-
-/* =========================================
-   CAMERA
-========================================= */
-
-function updateCamera(){
-
-    const offset=
-        new THREE.Vector3(
-            0,
-            8,
-            15
-        );
-
-
-    offset.applyQuaternion(
-        playerCar.quaternion
-    );
-
-
-    const target=
-        playerCar.position.clone()
-        .add(offset);
-
-
-    camera.position.lerp(
-        target,
-        .1
-    );
-
-
-    const look=
-        playerCar.position.clone();
-
-
-    look.y+=1;
-
-
-    camera.lookAt(
-        look
-    );
-}
-
-
-/* =========================================
-   TIMER
-========================================= */
-
-function updateTimer(){
-
-    raceTime+=
-        clock.getDelta();
-
-
-    document.getElementById(
-        "timer"
-    ).textContent=
-        raceTime.toFixed(1);
-}
-
-
-/* =========================================
-   UI
-========================================= */
-
-function updateUI(){
-
-    document.getElementById(
-        "speed"
-    ).textContent=
-        Math.round(
-            speed*180
-        );
-
-
-    document.getElementById(
-        "nitroBar"
-    ).style.width=
-        nitro+"%";
-
-
-    document.getElementById(
-        "lap"
-    ).textContent=
-        Math.min(
-            lap,
-            totalLaps
-        );
-
-
-    document.getElementById(
-        "position"
-    ).textContent=
-        calculatePosition();
-}
-
-
-/* =========================================
-   WIN
-========================================= */
-
-function winRace(){
-
-    if(gameOver)
-        return;
-
-
-    gameOver=true;
-
-    speed=0;
-
-
-    document.getElementById(
-        "message"
-    ).style.display="block";
-
-
-    document.getElementById(
-        "resultTitle"
-    ).textContent=
-        "🏆 YOU WIN!";
-
-
-    document.getElementById(
-        "resultText"
-    ).innerHTML=
-        "Race complete!<br><br>"+
-        "🏁 Laps: "+totalLaps+
-        "<br>⏱️ Time: "+
-        raceTime.toFixed(2)+
-        " seconds<br>"+
-        "🏆 Position: "+
-        calculatePosition()+"/6";
-}
-
-
-/* =========================================
-   ANIMATION
-========================================= */
-
-function animate(){
-
-    requestAnimationFrame(
-        animate
-    );
-
-
-    if(!started)
-        return;
-
-
-    if(!gameOver){
-
-        updatePlayer();
-
-        updateOpponents();
-
-        updateTimer();
-
-        updateUI();
+    if(e.key.toLowerCase() === "f"){
+        fight();
     }
 
+});
 
-    renderer.render(
-        scene,
-        camera
-    );
+
+document.addEventListener("keyup",(e)=>{
+
+    if(e.key === "ArrowLeft")
+        movingLeft = false;
+
+    if(e.key === "ArrowRight")
+        movingRight = false;
+
+});
+
+
+/* MOBILE BUTTONS */
+
+function holdButton(button,down,up){
+
+    button.addEventListener("pointerdown",(e)=>{
+        e.preventDefault();
+        down();
+    });
+
+    button.addEventListener("pointerup",(e)=>{
+        e.preventDefault();
+        up();
+    });
+
+    button.addEventListener("pointerleave",up);
 }
 
 
-/* =========================================
-   RESIZE
-========================================= */
+holdButton(
+    document.getElementById("leftBtn"),
+    ()=>movingLeft=true,
+    ()=>movingLeft=false
+);
 
-function resize(){
-
-    if(!camera || !renderer)
-        return;
-
-
-    camera.aspect=
-        window.innerWidth/
-        window.innerHeight;
+holdButton(
+    document.getElementById("rightBtn"),
+    ()=>movingRight=true,
+    ()=>movingRight=false
+);
 
 
-    camera.updateProjectionMatrix();
+document.getElementById("shootBtn")
+.addEventListener("pointerdown",(e)=>{
+    e.preventDefault();
+    shoot();
+});
 
 
-    renderer.setSize(
-        window.innerWidth,
-        window.innerHeight
-    );
-}
+document.getElementById("fightBtn")
+.addEventListener("pointerdown",(e)=>{
+    e.preventDefault();
+    fight();
+});
 
 </script>
 
 </body>
 </html>
+```
