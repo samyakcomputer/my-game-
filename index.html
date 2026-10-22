@@ -1,774 +1,104 @@
-```html
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Shooting + Fighting Game</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Samyak Bulk SMS</title>
 <style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-    touch-action:none;
-}
-
-body{
-    background:#050505;
-    overflow:hidden;
-    font-family:Arial,sans-serif;
-}
-
-#game{
-    position:relative;
-    width:100vw;
-    height:100vh;
-    background:
-      linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.5)),
-      radial-gradient(circle at center,#263238,#080808 70%);
-    overflow:hidden;
-}
-
-#ground{
-    position:absolute;
-    bottom:0;
-    width:100%;
-    height:25%;
-    background:
-      repeating-linear-gradient(
-        45deg,
-        #171717 0px,
-        #171717 20px,
-        #202020 20px,
-        #202020 40px
-      );
-    border-top:3px solid #444;
-}
-
-/* HUD */
-#hud{
-    position:absolute;
-    top:15px;
-    left:15px;
-    right:15px;
-    z-index:20;
-    display:flex;
-    justify-content:space-between;
-    color:white;
-    font-size:18px;
-    font-weight:bold;
-}
-
-#healthBox{
-    width:180px;
-    height:18px;
-    border:2px solid white;
-    margin-top:7px;
-    background:#222;
-}
-
-#health{
-    width:100%;
-    height:100%;
-    background:#20d060;
-}
-
-/* Player */
-#player{
-    position:absolute;
-    width:55px;
-    height:75px;
-    bottom:25%;
-    left:12%;
-    z-index:10;
-}
-
-.head{
-    position:absolute;
-    width:28px;
-    height:28px;
-    border-radius:50%;
-    background:#d99b68;
-    left:14px;
-    top:0;
-}
-
-.body{
-    position:absolute;
-    width:40px;
-    height:42px;
-    background:#1976d2;
-    border-radius:10px;
-    left:7px;
-    top:27px;
-}
-
-.gun{
-    position:absolute;
-    width:42px;
-    height:9px;
-    background:#777;
-    right:-35px;
-    top:35px;
-    transform:rotate(-5deg);
-    border-radius:4px;
-}
-
-.arm{
-    position:absolute;
-    width:30px;
-    height:8px;
-    background:#d99b68;
-    top:32px;
-    left:28px;
-    transform:rotate(-15deg);
-}
-
-/* Enemy */
-.enemy{
-    position:absolute;
-    width:55px;
-    height:75px;
-    bottom:25%;
-    z-index:8;
-}
-
-.enemy .head{
-    background:#c97c55;
-}
-
-.enemy .body{
-    background:#c62828;
-}
-
-.enemy .gun{
-    display:none;
-}
-
-/* Bullet */
-.bullet{
-    position:absolute;
-    width:15px;
-    height:5px;
-    background:#ffe600;
-    border-radius:10px;
-    z-index:12;
-    box-shadow:0 0 12px #fff000;
-}
-
-/* Hit effect */
-.hit{
-    position:absolute;
-    width:30px;
-    height:30px;
-    border-radius:50%;
-    border:4px solid #fff;
-    animation:hit .2s linear forwards;
-    z-index:30;
-}
-
-@keyframes hit{
-    from{transform:scale(.4);opacity:1}
-    to{transform:scale(2);opacity:0}
-}
-
-/* Start Screen */
-#startScreen{
-    position:absolute;
-    inset:0;
-    background:rgba(0,0,0,.85);
-    z-index:100;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    color:white;
-    text-align:center;
-}
-
-#startScreen h1{
-    font-size:42px;
-    color:#ff3333;
-    text-shadow:0 0 15px red;
-    margin-bottom:15px;
-}
-
-#startScreen p{
-    margin:7px;
-    color:#ddd;
-}
-
-#startBtn{
-    margin-top:25px;
-    padding:15px 40px;
-    border:none;
-    border-radius:10px;
-    background:#e53935;
-    color:white;
-    font-size:20px;
-    font-weight:bold;
-}
-
-/* Mobile Controls */
-#controls{
-    position:absolute;
-    bottom:20px;
-    left:0;
-    width:100%;
-    z-index:50;
-    display:flex;
-    justify-content:space-between;
-    padding:0 20px;
-}
-
-.controlGroup{
-    display:flex;
-    gap:12px;
-}
-
-.btn{
-    width:65px;
-    height:65px;
-    border-radius:50%;
-    border:2px solid #aaa;
-    background:rgba(30,30,30,.75);
-    color:white;
-    font-size:25px;
-    font-weight:bold;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    user-select:none;
-}
-
-.shoot{
-    background:rgba(190,30,30,.8);
-}
-
-.fight{
-    background:rgba(40,80,190,.8);
-}
-
-/* Game Over */
-#gameOver{
-    display:none;
-    position:absolute;
-    inset:0;
-    background:rgba(0,0,0,.88);
-    z-index:200;
-    color:white;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    text-align:center;
-}
-
-#gameOver h2{
-    color:red;
-    font-size:45px;
-    margin-bottom:10px;
-}
-
-#restartBtn{
-    margin-top:20px;
-    padding:13px 35px;
-    border:0;
-    border-radius:8px;
-    background:#e53935;
-    color:white;
-    font-size:19px;
-}
-
-@media(max-width:600px){
-    #startScreen h1{
-        font-size:30px;
-    }
-
-    #hud{
-        font-size:14px;
-    }
-
-    #healthBox{
-        width:130px;
-    }
-
-    .btn{
-        width:58px;
-        height:58px;
-    }
-}
+body{font-family:Arial,sans-serif;max-width:700px;margin:25px auto;
+padding:16px;background:#f3f6fb;color:#172033}
+main{background:white;padding:22px;border-radius:14px}
+textarea,input{box-sizing:border-box;width:100%;padding:12px;
+margin:8px 0 16px;border:1px solid #bbc5d5;border-radius:8px}
+textarea{min-height:130px}
+button{padding:12px;border:0;border-radius:8px;
+background:#1769e0;color:white;font-weight:bold;cursor:pointer}
+#status{white-space:pre-wrap;overflow-wrap:anywhere}
 </style>
 </head>
-
 <body>
+<main>
+<h2>Samyak Computer Classes</h2>
+<p>Bulk SMS Sender</p>
 
-<div id="game">
+<label>Worker URL</label>
+<input id="worker" type="url" placeholder="https://your-worker.workers.dev">
 
-    <div id="ground"></div>
+<label>Admin PIN</label>
+<input id="pin" type="password" autocomplete="off">
 
-    <div id="hud">
-        <div>
-            ❤️ Health
-            <div id="healthBox">
-                <div id="health"></div>
-            </div>
-        </div>
+<label>बच्चों के मोबाइल नंबर (हर लाइन पर एक)</label>
+<textarea id="numbers" placeholder="9876543210&#10;9123456780"></textarea>
 
-        <div>
-            🎯 Score: <span id="score">0</span>
-            <br>
-            ⭐ Level: <span id="level">1</span>
-        </div>
-    </div>
+<label>मैसेज (DLT-approved template से मेल खाना चाहिए)</label>
+<textarea id="message" placeholder="अपना स्वीकृत SMS template यहाँ लिखें"></textarea>
 
-    <div id="player">
-        <div class="head"></div>
-        <div class="body"></div>
-        <div class="arm"></div>
-        <div class="gun"></div>
-    </div>
-
-    <div id="controls">
-
-        <div class="controlGroup">
-            <div class="btn" id="leftBtn">◀</div>
-            <div class="btn" id="rightBtn">▶</div>
-        </div>
-
-        <div class="controlGroup">
-            <div class="btn fight" id="fightBtn">👊</div>
-            <div class="btn shoot" id="shootBtn">🔫</div>
-        </div>
-
-    </div>
-
-    <div id="startScreen">
-        <h1>🔥 SHOOT & FIGHT 🔥</h1>
-
-        <p>🔫 Shoot enemies</p>
-        <p>👊 Fight enemies when they get close</p>
-        <p>💻 Computer: Arrow Keys + Space + F</p>
-        <p>📱 Mobile: Touch Buttons</p>
-
-        <button id="startBtn">START GAME</button>
-    </div>
-
-    <div id="gameOver">
-        <h2>GAME OVER</h2>
-        <p>Final Score: <span id="finalScore">0</span></p>
-        <button id="restartBtn">PLAY AGAIN</button>
-    </div>
-
-</div>
+<p id="count">0 नंबर</p>
+<button id="send">SMS भेजें</button>
+<pre id="status"></pre>
+</main>
 
 <script>
+const numbers = document.getElementById("numbers");
+const count = document.getElementById("count");
+const status = document.getElementById("status");
+const send = document.getElementById("send");
 
-const game = document.getElementById("game");
-const player = document.getElementById("player");
-
-const scoreText = document.getElementById("score");
-const levelText = document.getElementById("level");
-const healthBar = document.getElementById("health");
-
-const startScreen = document.getElementById("startScreen");
-const gameOverScreen = document.getElementById("gameOver");
-
-let playerX = 12;
-let health = 100;
-let score = 0;
-let level = 1;
-
-let movingLeft = false;
-let movingRight = false;
-
-let gameRunning = false;
-let enemies = [];
-let bullets = [];
-
-let enemyTimer = null;
-let gameLoop = null;
-
-
-/* START GAME */
-
-document.getElementById("startBtn").onclick = startGame;
-
-document.getElementById("restartBtn").onclick = startGame;
-
-
-function startGame(){
-
-    startScreen.style.display = "none";
-    gameOverScreen.style.display = "none";
-
-    health = 100;
-    score = 0;
-    level = 1;
-    playerX = 12;
-
-    scoreText.textContent = score;
-    levelText.textContent = level;
-    healthBar.style.width = health + "%";
-
-    enemies.forEach(e => e.element.remove());
-    bullets.forEach(b => b.element.remove());
-
-    enemies = [];
-    bullets = [];
-
-    gameRunning = true;
-
-    player.style.left = playerX + "%";
-
-    clearInterval(enemyTimer);
-
-    enemyTimer = setInterval(spawnEnemy,900);
-
-    cancelAnimationFrame(gameLoop);
-
-    gameLoop = requestAnimationFrame(update);
-
+function getNumbers() {
+  return [...new Set(numbers.value.split(/[\n,;]+/)
+    .map(s => s.trim()).filter(Boolean))];
 }
-
-
-/* PLAYER MOVEMENT */
-
-function movePlayer(){
-
-    if(!gameRunning) return;
-
-    if(movingLeft){
-        playerX -= .8;
-    }
-
-    if(movingRight){
-        playerX += .8;
-    }
-
-    playerX = Math.max(2,Math.min(75,playerX));
-
-    player.style.left = playerX + "%";
-}
-
-
-/* SHOOT */
-
-function shoot(){
-
-    if(!gameRunning) return;
-
-    const bullet = document.createElement("div");
-
-    bullet.className = "bullet";
-
-    const startX = player.offsetLeft + 70;
-    const startY = player.offsetTop + 38;
-
-    bullet.style.left = startX + "px";
-    bullet.style.top = startY + "px";
-
-    game.appendChild(bullet);
-
-    bullets.push({
-        element:bullet,
-        x:startX,
-        y:startY
-    });
-}
-
-
-/* FIGHT */
-
-function fight(){
-
-    if(!gameRunning) return;
-
-    const px = player.offsetLeft;
-
-    enemies.forEach((enemy,index)=>{
-
-        const distance = Math.abs(enemy.x - px);
-
-        if(distance < 100){
-
-            damageEnemy(enemy,index,20);
-
-        }
-
-    });
-}
-
-
-/* CREATE ENEMY */
-
-function spawnEnemy(){
-
-    if(!gameRunning) return;
-
-    const enemy = document.createElement("div");
-
-    enemy.className = "enemy";
-
-    enemy.innerHTML = `
-        <div class="head"></div>
-        <div class="body"></div>
-        <div class="arm"></div>
-    `;
-
-    let x = 90 + Math.random()*10;
-
-    enemy.style.left = x + "%";
-
-    game.appendChild(enemy);
-
-    enemies.push({
-        element:enemy,
-        x:x * window.innerWidth / 100,
-        health:100,
-        speed:0.5 + level*.08
-    });
-
-}
-
-
-/* DAMAGE ENEMY */
-
-function damageEnemy(enemy,index,damage){
-
-    enemy.health -= damage;
-
-    createHitEffect(enemy.element.offsetLeft+20,
-                     enemy.element.offsetTop+20);
-
-    if(enemy.health <= 0){
-
-        score += 10;
-
-        scoreText.textContent = score;
-
-        enemy.element.remove();
-
-        enemies.splice(index,1);
-
-        level = Math.floor(score/100)+1;
-
-        levelText.textContent = level;
-    }
-
-}
-
-
-/* HIT EFFECT */
-
-function createHitEffect(x,y){
-
-    const hit = document.createElement("div");
-
-    hit.className = "hit";
-
-    hit.style.left = x + "px";
-    hit.style.top = y + "px";
-
-    game.appendChild(hit);
-
-    setTimeout(()=>{
-        hit.remove();
-    },200);
-
-}
-
-
-/* UPDATE GAME */
-
-function update(){
-
-    if(!gameRunning) return;
-
-    movePlayer();
-
-
-    /* BULLETS */
-
-    bullets.forEach((bullet,index)=>{
-
-        bullet.x += 9;
-
-        bullet.element.style.left =
-            bullet.x + "px";
-
-        let removeBullet = false;
-
-        enemies.forEach((enemy,enemyIndex)=>{
-
-            const enemyScreenX =
-                enemy.element.offsetLeft;
-
-            if(
-                bullet.x > enemyScreenX &&
-                bullet.x < enemyScreenX + 70
-            ){
-
-                damageEnemy(enemy,enemyIndex,35);
-
-                removeBullet = true;
-            }
-
-        });
-
-        if(
-            removeBullet ||
-            bullet.x > window.innerWidth
-        ){
-
-            bullet.element.remove();
-
-            bullets.splice(index,1);
-        }
-
-    });
-
-
-    /* ENEMIES */
-
-    enemies.forEach((enemy,index)=>{
-
-        const playerScreenX =
-            player.offsetLeft;
-
-        const enemyX =
-            enemy.element.offsetLeft;
-
-        if(enemyX > playerScreenX){
-
-            enemy.x -= enemy.speed;
-
-            enemy.element.style.left =
-                enemy.x + "px";
-
-        }
-
-
-        /* Enemy reaches player */
-
-        if(enemy.x < playerScreenX + 45){
-
-            health -= .4;
-
-            healthBar.style.width =
-                Math.max(0,health) + "%";
-
-            if(health <= 0){
-
-                endGame();
-            }
-
-        }
-
-    });
-
-
-    gameLoop =
-        requestAnimationFrame(update);
-}
-
-
-/* GAME OVER */
-
-function endGame(){
-
-    gameRunning = false;
-
-    clearInterval(enemyTimer);
-
-    cancelAnimationFrame(gameLoop);
-
-    document.getElementById("finalScore")
-        .textContent = score;
-
-    gameOverScreen.style.display = "flex";
-}
-
-
-/* KEYBOARD */
-
-document.addEventListener("keydown",(e)=>{
-
-    if(e.key === "ArrowLeft")
-        movingLeft = true;
-
-    if(e.key === "ArrowRight")
-        movingRight = true;
-
-    if(e.code === "Space"){
-        e.preventDefault();
-        shoot();
-    }
-
-    if(e.key.toLowerCase() === "f"){
-        fight();
-    }
-
+numbers.addEventListener("input", () => {
+  count.textContent = getNumbers().length + " नंबर";
 });
 
+send.addEventListener("click", async () => {
+  const worker = document.getElementById("worker").value.trim();
+  const pin = document.getElementById("pin").value;
+  const list = getNumbers();
+  const message = document.getElementById("message").value.trim();
 
-document.addEventListener("keyup",(e)=>{
+  if (!worker.startsWith("https://")) {
+    status.textContent = "Worker का सही HTTPS URL डालें।";
+    return;
+  }
+  if (!pin || !message || !list.length) {
+    status.textContent = "PIN, नंबर और मैसेज भरें।";
+    return;
+  }
+  if (list.length > 500) {
+    status.textContent = "एक बार में अधिकतम 500 नंबर रखें।";
+    return;
+  }
 
-    if(e.key === "ArrowLeft")
-        movingLeft = false;
+  const confirmSend = confirm(
+    list.length + " नंबरों पर SMS भेजने की API प्रक्रिया शुरू करें?\n" +
+    "शुल्क लग सकता है। नंबरों और template की जाँच कर लें।"
+  );
+  if (!confirmSend) return;
 
-    if(e.key === "ArrowRight")
-        movingRight = false;
-
-});
-
-
-/* MOBILE BUTTONS */
-
-function holdButton(button,down,up){
-
-    button.addEventListener("pointerdown",(e)=>{
-        e.preventDefault();
-        down();
+  send.disabled = true;
+  status.textContent = "प्रक्रिया चल रही है। कृपया पेज बंद न करें...";
+  try {
+    const response = await fetch(worker, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Admin-Pin": pin
+      },
+      body: JSON.stringify({numbers: list, message})
     });
-
-    button.addEventListener("pointerup",(e)=>{
-        e.preventDefault();
-        up();
-    });
-
-    button.addEventListener("pointerleave",up);
-}
-
-
-holdButton(
-    document.getElementById("leftBtn"),
-    ()=>movingLeft=true,
-    ()=>movingLeft=false
-);
-
-holdButton(
-    document.getElementById("rightBtn"),
-    ()=>movingRight=true,
-    ()=>movingRight=false
-);
-
-
-document.getElementById("shootBtn")
-.addEventListener("pointerdown",(e)=>{
-    e.preventDefault();
-    shoot();
+    const result = await response.json();
+    status.textContent = JSON.stringify(result, null, 2);
+  } catch (error) {
+    status.textContent =
+      "Request पूरी नहीं हुई। URL/CORS जाँचें। " +
+      "पहले provider dashboard में देखें कि SMS भेजे गए हैं या नहीं।";
+  } finally {
+    send.disabled = false;
+  }
 });
-
-
-document.getElementById("fightBtn")
-.addEventListener("pointerdown",(e)=>{
-    e.preventDefault();
-    fight();
-});
-
 </script>
-
 </body>
 </html>
-```
